@@ -1,0 +1,134 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.14/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.14",
+  "version": "1.0.0",
+  "id": "{{TEAMS_APP_ID}}",
+  "packageName": "com.company.adcommandsbot",
+  "developer": {
+    "name": "IT Team",
+    "websiteUrl": "https://yourcompany.com",
+    "privacyUrl": "https://yourcompany.com/privacy",
+    "termsOfUseUrl": "https://yourcompany.com/terms"
+  },
+  "name": {
+    "short": "AD Commands Bot",
+    "full": "Active Directory Commands Bot for Rapid7 Insight Connect"
+  },
+  "description": {
+    "short": "Secure AD management through Teams with MFA authentication",
+    "full": "A Teams bot that provides secure access to Active Directory management commands through Rapid7 Insight Connect integration. Features include user management, endpoint control, role-based access control, and comprehensive audit logging."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#FFFFFF",
+  "configurableTabs": [],
+  "staticTabs": [],
+  "bots": [
+    {
+      "botId": "{{BOT_ID}}",
+      "scopes": [
+        "personal",
+        "team",
+        "groupchat"
+      ],
+      "supportsFiles": false,
+      "isNotificationOnly": false,
+      "commandLists": [
+        {
+          "scopes": [
+            "personal",
+            "team",
+            "groupchat"
+          ],
+          "commands": [
+            {
+              "id": "unlockUser",
+              "type": "action",
+              "context": [
+                "message"
+              ],
+              "description": "Unlock a user account",
+              "title": "Unlock User",
+              "fetchTask": false
+            },
+            {
+              "id": "enableUser",
+              "type": "action",
+              "context": [
+                "message"
+              ],
+              "description": "Enable a user account",
+              "title": "Enable User",
+              "fetchTask": false
+            },
+            {
+              "id": "disableUser",
+              "type": "action",
+              "context": [
+                "message"
+              ],
+              "description": "Disable a user account",
+              "title": "Disable User",
+              "fetchTask": false
+            },
+            {
+              "id": "resetPassword",
+              "type": "action",
+              "context": [
+                "message"
+              ],
+              "description": "Reset user password for next login",
+              "title": "Reset Password",
+              "fetchTask": false
+            },
+            {
+              "id": "revokeSessions",
+              "type": "action",
+              "context": [
+                "message"
+              ],
+              "description": "Revoke all user sessions",
+              "title": "Revoke Sessions",
+              "fetchTask": false
+            },
+            {
+              "id": "enableAgent",
+              "type": "action",
+              "context": [
+                "message"
+              ],
+              "description": "Enable Sentinel One agent for 3 hours",
+              "title": "Enable Agent",
+              "fetchTask": false
+            },
+            {
+              "id": "disableAgent",
+              "type": "action",
+              "context": [
+                "message"
+              ],
+              "description": "Disable Sentinel One agent for 3 hours",
+              "title": "Disable Agent",
+              "fetchTask": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "composeExtensions": [],
+  "permissions": [
+    "identity",
+    "messageTeamMembers"
+  ],
+  "validDomains": [
+    "yourcompany.com",
+    "{{BOT_ENDPOINT}}"
+  ],
+  "webApplicationInfo": {
+    "id": "{{CLIENT_ID}}",
+    "resource": "https://graph.microsoft.com"
+  }
+}

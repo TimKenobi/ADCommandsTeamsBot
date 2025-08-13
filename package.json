@@ -1,0 +1,42 @@
+{
+  "name": "ad-commands-teams-bot",
+  "version": "1.0.0",
+  "description": "Teams Bot for AD Commands with Rapid7 Insight Connect integration",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "dependencies": {
+    "botbuilder": "^4.20.1",
+    "botframework-connector": "^4.20.1",
+    "botframework-schema": "^4.20.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "axios": "^1.6.0",
+    "jsonwebtoken": "^9.0.2",
+    "msal-node": "^2.1.0",
+    "winston": "^3.11.0",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.1",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "@types/node": "^20.8.0",
+    "typescript": "^5.2.2"
+  },
+  "keywords": [
+    "teams",
+    "bot",
+    "active-directory",
+    "rapid7",
+    "insight-connect"
+  ],
+  "author": "IT Team",
+  "license": "MIT"
+}

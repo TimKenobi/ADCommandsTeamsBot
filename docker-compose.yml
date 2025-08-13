@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  ad-commands-bot:
+    build: .
+    ports:
+      - "3978:3978"
+    environment:
+      - NODE_ENV=development
+      - PORT=3978
+      - BOT_ID=${BOT_ID}
+      - BOT_PASSWORD=${BOT_PASSWORD}
+      - TEAMS_APP_ID=${TEAMS_APP_ID}
+      - TEAMS_APP_PASSWORD=${TEAMS_APP_PASSWORD}
+      - TENANT_ID=${TENANT_ID}
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - RAPID7_BASE_URL=${RAPID7_BASE_URL}
+      - RAPID7_API_KEY=${RAPID7_API_KEY}
+      - DB_PATH=./data/ad-commands.db
+      - LOG_LEVEL=debug
+      - LOG_FILE=./logs/bot.log
+      - JWT_SECRET=${JWT_SECRET}
+      - SESSION_TIMEOUT=3600000
+      - IT_TEAM_CHAT_ID=${IT_TEAM_CHAT_ID}
+      - HR_TEAM_CHAT_ID=${HR_TEAM_CHAT_ID}
+      - DOMAIN_1=${DOMAIN_1}
+      - DOMAIN_2=${DOMAIN_2}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./.env:/app/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3978/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Add a database service if you want to use external database
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: adcommands
+  #     POSTGRES_USER: botuser
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+volumes:
+  postgres_data:

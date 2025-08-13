@@ -15,8 +15,6 @@ services:
       - TENANT_ID=${TENANT_ID}
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
-      - RAPID7_BASE_URL=${RAPID7_BASE_URL}
-      - RAPID7_API_KEY=${RAPID7_API_KEY}
       - DB_PATH=./data/ad-commands.db
       - LOG_LEVEL=debug
       - LOG_FILE=./logs/bot.log

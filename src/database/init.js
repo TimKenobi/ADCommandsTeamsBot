@@ -82,18 +82,17 @@ function createTables(db) {
                 `
             },
             {
-                name: 'rapid7_commands',
+                name: 'teams_commands',
                 sql: `
-                    CREATE TABLE IF NOT EXISTS rapid7_commands (
+                    CREATE TABLE IF NOT EXISTS teams_commands (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         commandId TEXT UNIQUE,
                         command TEXT NOT NULL,
                         userId TEXT NOT NULL,
                         userName TEXT NOT NULL,
                         status TEXT NOT NULL,
-                        response TEXT,
-                        error TEXT,
-                        executionTime INTEGER,
+                        channelId TEXT,
+                        department TEXT,
                         timestamp TEXT NOT NULL,
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                     )
@@ -166,8 +165,8 @@ function createIndexes(db) {
             'CREATE INDEX IF NOT EXISTS idx_command_logs_chatId ON command_logs(chatId)',
             'CREATE INDEX IF NOT EXISTS idx_user_sessions_sessionId ON user_sessions(sessionId)',
             'CREATE INDEX IF NOT EXISTS idx_user_sessions_userId ON user_sessions(userId)',
-            'CREATE INDEX IF NOT EXISTS idx_rapid7_commands_commandId ON rapid7_commands(commandId)',
-            'CREATE INDEX IF NOT EXISTS idx_rapid7_commands_userId ON rapid7_commands(userId)',
+            'CREATE INDEX IF NOT EXISTS idx_teams_commands_commandId ON teams_commands(commandId)',
+            'CREATE INDEX IF NOT EXISTS idx_teams_commands_userId ON teams_commands(userId)',
             'CREATE INDEX IF NOT EXISTS idx_user_lookups_userId ON user_lookups(userId)',
             'CREATE INDEX IF NOT EXISTS idx_user_lookups_timestamp ON user_lookups(timestamp)'
         ];

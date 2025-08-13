@@ -137,7 +137,7 @@ class ADCommandsBot {
                 },
                 {
                     type: 'TextBlock',
-                    text: 'I can help you manage Active Directory users and endpoints through Rapid7 Insight Connect.',
+                    text: 'I can help you manage Active Directory users and endpoints through Teams channels.',
                     wrap: true
                 },
                 {

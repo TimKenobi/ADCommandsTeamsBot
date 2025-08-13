@@ -58,17 +58,16 @@ class AuditLogger {
                 )
             `;
 
-            const rapid7CommandsTable = `
-                CREATE TABLE IF NOT EXISTS rapid7_commands (
+            const teamsCommandsTable = `
+                CREATE TABLE IF NOT EXISTS teams_commands (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     commandId TEXT UNIQUE,
                     command TEXT NOT NULL,
                     userId TEXT NOT NULL,
                     userName TEXT NOT NULL,
                     status TEXT NOT NULL,
-                    response TEXT,
-                    error TEXT,
-                    executionTime INTEGER,
+                    channelId TEXT,
+                    department TEXT,
                     timestamp TEXT NOT NULL,
                     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
@@ -104,9 +103,9 @@ class AuditLogger {
                     }
                 });
 
-                this.db.run(rapid7CommandsTable, (err) => {
+                this.db.run(teamsCommandsTable, (err) => {
                     if (err) {
-                        logger.error('Error creating rapid7_commands table:', err);
+                        logger.error('Error creating teams_commands table:', err);
                         reject(err);
                     }
                 });
@@ -123,7 +122,7 @@ class AuditLogger {
                 this.db.run('CREATE INDEX IF NOT EXISTS idx_command_logs_timestamp ON command_logs(timestamp)');
                 this.db.run('CREATE INDEX IF NOT EXISTS idx_command_logs_chatId ON command_logs(chatId)');
                 this.db.run('CREATE INDEX IF NOT EXISTS idx_user_sessions_sessionId ON user_sessions(sessionId)');
-                this.db.run('CREATE INDEX IF NOT EXISTS idx_rapid7_commands_commandId ON rapid7_commands(commandId)');
+                this.db.run('CREATE INDEX IF NOT EXISTS idx_teams_commands_commandId ON teams_commands(commandId)');
 
                 resolve();
             });
@@ -210,14 +209,14 @@ class AuditLogger {
         }
     }
 
-    async logRapid7Command(commandData) {
+    async logTeamsCommand(commandData) {
         try {
-            const { commandId, command, userId, userName, status, response, error, executionTime } = commandData;
+            const { commandId, command, userId, userName, status, channelId, department } = commandData;
             
             const sql = `
-                INSERT INTO rapid7_commands 
-                (commandId, command, userId, userName, status, response, error, executionTime, timestamp)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO teams_commands 
+                (commandId, command, userId, userName, status, channelId, department, timestamp)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             const params = [
@@ -226,26 +225,25 @@ class AuditLogger {
                 userId,
                 userName,
                 status,
-                response ? JSON.stringify(response) : '',
-                error || '',
-                executionTime || 0,
+                channelId || '',
+                department || '',
                 new Date().toISOString()
             ];
 
             return new Promise((resolve, reject) => {
                 this.db.run(sql, params, function(err) {
                     if (err) {
-                        logger.error('Error logging Rapid7 command:', err);
+                        logger.error('Error logging Teams command:', err);
                         reject(err);
                     } else {
-                        logger.info(`Rapid7 command logged with ID: ${this.lastID}`);
+                        logger.info(`Teams command logged with ID: ${this.lastID}`);
                         resolve(this.lastID);
                     }
                 });
             });
 
         } catch (error) {
-            logger.error('Error in logRapid7Command:', error);
+            logger.error('Error in logTeamsCommand:', error);
             throw error;
         }
     }

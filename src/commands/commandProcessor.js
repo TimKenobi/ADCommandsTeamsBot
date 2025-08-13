@@ -73,7 +73,7 @@ class CommandProcessor {
 
             // Send the command to the appropriate Teams channel for Insight Connect to process
             const commandMessage = `!unlock-user ${username}`;
-            await this.teamsService.sendCommandToChannel(commandMessage, userInfo.department || 'IT');
+            const teamsResult = await this.teamsService.sendCommandToChannel(commandMessage, userInfo.department || 'IT');
             
             return {
                 success: true,

@@ -12,11 +12,11 @@
   },
   "name": {
     "short": "AD Commands Bot",
-    "full": "Active Directory Commands Bot for Rapid7 Insight Connect"
+    "full": "Active Directory Commands Bot for Teams"
   },
   "description": {
     "short": "Secure AD management through Teams with MFA authentication",
-    "full": "A Teams bot that provides secure access to Active Directory management commands through Rapid7 Insight Connect integration. Features include user management, endpoint control, role-based access control, and comprehensive audit logging."
+    "full": "A Teams bot that provides secure access to Active Directory management commands through Teams channel integration. Features include user management, endpoint control, role-based access control, comprehensive audit logging, and web management interface."
   },
   "icons": {
     "outline": "outline.png",

@@ -9,7 +9,7 @@ This guide will walk you through setting up the AD Commands Teams Bot from scrat
 - Node.js 18+ and npm
 - Azure CLI (for deployment)
 - Access to Microsoft Teams admin center
-- Rapid7 Insight Connect instance
+- Insight Connect already configured and listening on Teams channels
 
 ## Step 1: Azure Setup
 
@@ -68,23 +68,19 @@ This guide will walk you through setting up the AD Commands Teams Bot from scrat
 2. Set **Messaging endpoint** to: `https://yourdomain.com/api/messages`
 3. Save the changes
 
-## Step 3: Rapid7 Insight Connect Configuration
+## Step 3: Teams Channel Configuration
 
-### 3.1 Get API Credentials
+### 3.1 Configure Insight Connect Channels
 
-1. Log into your Rapid7 Insight Connect instance
-2. Go to **Settings** > **API Keys**
-3. Create a new API key with appropriate permissions
-4. Note the **Base URL** and **API Key**
+1. Ensure Insight Connect is already configured and listening on your Teams channels
+2. Note the channel IDs where Insight Connect is processing commands
+3. Verify that Insight Connect responds to the command format you want to use
 
-### 3.2 Test API Connection
+### 3.2 Test Channel Integration
 
-Use the provided test script or manually test the connection:
-
-```bash
-curl -X GET "https://your-rapid7-instance.insight.rapid7.com/api/v1/health" \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
+1. Send a test command directly to your Teams channel
+2. Verify that Insight Connect processes it correctly
+3. Note the exact command format that works
 
 ## Step 4: Environment Configuration
 
@@ -99,15 +95,12 @@ BOT_ID=your-bot-id-from-bot-framework
 BOT_PASSWORD=your-bot-password
 TEAMS_APP_ID=your-teams-app-id
 TEAMS_APP_PASSWORD=your-teams-app-password
+BOT_ENDPOINT=https://your-bot-domain.com
 
 # Microsoft Graph API Configuration
 TENANT_ID=your-tenant-id-from-azure
 CLIENT_ID=your-client-id-from-azure
 CLIENT_SECRET=your-client-secret-from-azure
-
-# Rapid7 Insight Connect Configuration
-RAPID7_BASE_URL=https://your-rapid7-instance.insight.rapid7.com
-RAPID7_API_KEY=your-rapid7-api-key
 
 # Chat Configuration
 IT_TEAM_CHAT_ID=your-it-team-chat-id
@@ -154,6 +147,7 @@ npm run dev
 1. Use [ngrok](https://ngrok.com/) to expose your local server
 2. Update your bot's messaging endpoint with the ngrok URL
 3. Test basic functionality
+4. Access the web GUI at `http://localhost:3978/gui`
 
 ## Step 6: Azure Deployment
 
@@ -239,11 +233,12 @@ az webapp deployment source config-zip --resource-group ADCommandsBot-RG --name 
 2. Test session timeout functionality
 3. Verify role-based access control
 
-### 8.3 Check Logs
+### 8.3 Check Logs and Web GUI
 
 1. Review application logs in Azure
 2. Check audit database for command history
-3. Verify Rapid7 command execution
+3. Access the web GUI to monitor commands and audit logs
+4. Verify commands are being sent to the correct Teams channels
 
 ## Step 9: Monitoring and Maintenance
 
@@ -256,8 +251,8 @@ az webapp deployment source config-zip --resource-group ADCommandsBot-RG --name 
 ### 9.2 Regular Maintenance
 
 1. Update dependencies monthly
-2. Review audit logs weekly
-3. Test Rapid7 connectivity regularly
+2. Review audit logs weekly through the web GUI
+3. Test Teams channel connectivity regularly
 4. Backup audit database
 
 ## Troubleshooting
@@ -266,7 +261,7 @@ az webapp deployment source config-zip --resource-group ADCommandsBot-RG --name 
 
 1. **Bot not responding**: Check messaging endpoint and bot credentials
 2. **Authentication errors**: Verify Microsoft Graph permissions
-3. **Command failures**: Check Rapid7 API connectivity
+3. **Command failures**: Ensure Insight Connect is listening on the configured Teams channels
 4. **MFA issues**: Ensure proper token validation
 
 ### Debug Commands
@@ -280,28 +275,45 @@ tail -f logs/bot.log
 
 # Test database
 sqlite3 data/ad-commands.db "SELECT * FROM command_logs LIMIT 5;"
+
+# Access web GUI
+# Open http://your-bot-url/gui in your browser
 ```
 
 ## Security Considerations
 
 1. **Environment Variables**: Never commit `.env` files
-2. **API Keys**: Rotate Rapid7 API keys regularly
+2. **Teams Integration**: Ensure proper channel permissions
 3. **Access Control**: Regularly review user permissions
-4. **Audit Logs**: Monitor for suspicious activity
+4. **Audit Logs**: Monitor for suspicious activity through the web GUI
 5. **Network Security**: Use HTTPS and proper firewall rules
+
+## Web Management Interface
+
+After deployment, access the web GUI for easier management:
+
+- **Main Page**: `https://your-bot-url/` - Landing page with overview
+- **Management Console**: `https://your-bot-url/gui` - Full admin interface
+- **Features**:
+  - Dashboard with real-time statistics
+  - Command execution form with help text
+  - Audit logs with search and filtering
+  - User management interface
+  - Settings and configuration
 
 ## Support
 
 For technical support:
 1. Check the application logs
 2. Review this setup guide
-3. Contact your IT team
-4. Refer to Microsoft Teams and Bot Framework documentation
+3. Use the web GUI to monitor system status
+4. Contact your IT team
+5. Refer to Microsoft Teams and Bot Framework documentation
 
 ## Next Steps
 
 After successful setup:
-1. Train your IT and HR teams on usage
+1. Train your IT and HR teams on usage (both Teams and web GUI)
 2. Document any customizations
 3. Set up monitoring and alerting
 4. Plan for future enhancements

@@ -1,4 +1,3 @@
-const { Rapid7Service } = require('../src/services/rapid7Service');
 const { EntraIDService } = require('../src/services/entraIDService');
 const dotenv = require('dotenv');
 
@@ -8,27 +7,8 @@ dotenv.config();
 async function testConnections() {
     console.log('🔍 Testing AD Commands Bot Connections...\n');
 
-    // Test Rapid7 Connection
-    console.log('1. Testing Rapid7 Insight Connect Connection...');
-    try {
-        const rapid7Service = new Rapid7Service();
-        const rapid7Result = await rapid7Service.testConnection();
-        
-        if (rapid7Result.success) {
-            console.log('✅ Rapid7 Connection: SUCCESS');
-            console.log(`   Status: ${rapid7Result.status}`);
-            console.log(`   Message: ${rapid7Result.message}\n`);
-        } else {
-            console.log('❌ Rapid7 Connection: FAILED');
-            console.log(`   Error: ${rapid7Result.error}\n`);
-        }
-    } catch (error) {
-        console.log('❌ Rapid7 Connection: ERROR');
-        console.log(`   Error: ${error.message}\n`);
-    }
-
     // Test Microsoft Graph Connection
-    console.log('2. Testing Microsoft Graph Connection...');
+    console.log('1. Testing Microsoft Graph Connection...');
     try {
         const entraIDService = new EntraIDService();
         const graphResult = await entraIDService.testConnection();
@@ -46,16 +26,37 @@ async function testConnections() {
         console.log(`   Error: ${error.message}\n`);
     }
 
+    // Test Teams Bot Configuration
+    console.log('2. Testing Teams Bot Configuration...');
+    const teamsConfig = {
+        BOT_ID: process.env.BOT_ID,
+        BOT_PASSWORD: process.env.BOT_PASSWORD,
+        TEAMS_APP_ID: process.env.TEAMS_APP_ID,
+        TEAMS_APP_PASSWORD: process.env.TEAMS_APP_PASSWORD
+    };
+
+    let teamsConfigOk = true;
+    Object.entries(teamsConfig).forEach(([key, value]) => {
+        if (value) {
+            console.log(`   ✅ ${key}: Set`);
+        } else {
+            console.log(`   ❌ ${key}: Missing`);
+            teamsConfigOk = false;
+        }
+    });
+
+    if (teamsConfigOk) {
+        console.log('\n✅ All Teams bot configuration variables are set\n');
+    } else {
+        console.log('\n❌ Some Teams bot configuration variables are missing\n');
+    }
+
     // Test Environment Variables
     console.log('3. Testing Environment Variables...');
     const requiredVars = [
-        'BOT_ID',
-        'BOT_PASSWORD',
         'TENANT_ID',
         'CLIENT_ID',
         'CLIENT_SECRET',
-        'RAPID7_BASE_URL',
-        'RAPID7_API_KEY',
         'IT_TEAM_CHAT_ID',
         'HR_TEAM_CHAT_ID',
         'DOMAIN_1',
@@ -83,6 +84,8 @@ async function testConnections() {
     console.log('============================');
     console.log('Check the results above to ensure all connections are working properly.');
     console.log('If any tests fail, review your configuration and try again.');
+    console.log('\nNote: This bot works by sending commands to Teams channels where');
+    console.log('Insight Connect is already listening and processing commands.');
 }
 
 // Run the tests

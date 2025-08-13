@@ -1,6 +1,6 @@
 # AD Commands Teams Bot
 
-A Microsoft Teams Bot application that provides secure access to Active Directory management commands through Rapid7 Insight Connect integration.
+A Microsoft Teams Bot application that provides secure access to Active Directory management commands through Teams channel integration with Insight Connect.
 
 ## Features
 
@@ -10,6 +10,7 @@ A Microsoft Teams Bot application that provides secure access to Active Director
 - **MFA Authentication**: Required for every command execution
 - **Audit Logging**: Complete record of all commands and users
 - **Multi-Domain Support**: Handles commands across different Active Directory domains
+- **Web Management Interface**: Beautiful GUI for easier command execution and monitoring
 
 ## Commands
 
@@ -26,11 +27,20 @@ A Microsoft Teams Bot application that provides secure access to Active Director
 - `!disable-user <username>` - Disable a user account
 - `!revoke-sessions <email>` - Revoke all user sessions
 
+## How It Works
+
+1. **User Authentication**: MFA required for every command execution
+2. **Command Processing**: Bot validates user permissions and command syntax
+3. **User Lookup**: Verifies target user exists in Entra ID before processing
+4. **Channel Routing**: Sends commands to appropriate Teams channels (IT or HR)
+5. **Insight Connect Processing**: Commands are processed by Insight Connect in the Teams channels
+6. **Audit Logging**: Complete audit trail of all actions for compliance
+
 ## Prerequisites
 
 - Microsoft 365 E3 license
 - Teams application permissions
-- Rapid7 Insight Connect instance
+- Insight Connect already configured and listening on Teams channels
 - Active Directory access
 - Node.js 18+ and npm
 
@@ -62,8 +72,7 @@ A Microsoft Teams Bot application that provides secure access to Active Director
 
 - **Teams Bot**: Bot ID, password, and app credentials
 - **Microsoft Graph**: Tenant ID, client ID, and secret for Entra ID access
-- **Rapid7**: Base URL and API key for Insight Connect
-- **Chat IDs**: IT and HR team chat identifiers
+- **Chat IDs**: IT and HR team chat identifiers where Insight Connect is listening
 - **Domains**: Active Directory domain configurations
 
 ### Teams App Manifest
@@ -77,13 +86,27 @@ The bot requires a Teams app manifest with appropriate permissions and bot capab
 - **Audit Logging**: Complete audit trail of all actions
 - **Session Management**: Secure token handling and validation
 
+## Web Management Interface
+
+Access the web GUI for easier management:
+
+- **Main Page**: `http://localhost:3978/` - Landing page with overview
+- **Management Console**: `http://localhost:3978/gui` - Full admin interface
+- **Features**:
+  - Dashboard with real-time statistics
+  - Command execution form with help text
+  - Audit logs with search and filtering
+  - User management interface
+  - Settings and configuration
+
 ## Architecture
 
 - **Bot Framework**: Microsoft Bot Framework v4
 - **Authentication**: MSAL for Microsoft Graph API integration
 - **Database**: SQLite for audit logging and session management
 - **Logging**: Winston for comprehensive logging
-- **API Integration**: Axios for Rapid7 Insight Connect communication
+- **Teams Integration**: Direct channel messaging for Insight Connect commands
+- **Web Interface**: Bootstrap-based responsive GUI
 
 ## Deployment
 
@@ -115,7 +138,7 @@ CMD ["npm", "start"]
 
 1. **Bot not responding**: Check Teams app registration and bot credentials
 2. **Authentication errors**: Verify Microsoft Graph API permissions
-3. **Command failures**: Check Rapid7 API connectivity and permissions
+3. **Command failures**: Ensure Insight Connect is listening on the configured Teams channels
 4. **MFA issues**: Ensure proper token validation and session management
 
 ### Logs

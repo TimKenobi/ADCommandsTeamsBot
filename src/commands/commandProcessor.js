@@ -1,11 +1,11 @@
-const { Rapid7Service } = require('../services/rapid7Service');
 const { EntraIDService } = require('../services/entraIDService');
+const { TeamsService } = require('../services/teamsService');
 const { logger } = require('../utils/logger');
 
 class CommandProcessor {
     constructor() {
-        this.rapid7Service = new Rapid7Service();
         this.entraIDService = new EntraIDService();
+        this.teamsService = new TeamsService();
     }
 
     async processCommand(command, userId, userName, chatId) {
@@ -71,18 +71,19 @@ class CommandProcessor {
                 };
             }
 
-            // Execute the unlock command through Rapid7
-            const result = await this.rapid7Service.executeCommand(`!unlock-user ${username}`);
+            // Send the command to the appropriate Teams channel for Insight Connect to process
+            const commandMessage = `!unlock-user ${username}`;
+            await this.teamsService.sendCommandToChannel(commandMessage, userInfo.department || 'IT');
             
             return {
                 success: true,
-                message: `Successfully unlocked user '${username}' (${userInfo.displayName}).`
+                message: `Command '${commandMessage}' sent to Insight Connect channel. User '${username}' (${userInfo.displayName}) will be unlocked.`
             };
         } catch (error) {
             logger.error(`Error unlocking user ${username}:`, error);
             return {
                 success: false,
-                message: `Failed to unlock user '${username}': ${error.message}`
+                message: `Failed to process unlock command for user '${username}': ${error.message}`
             };
         }
     }
@@ -98,18 +99,19 @@ class CommandProcessor {
                 };
             }
 
-            // Execute the enable command through Rapid7
-            const result = await this.rapid7Service.executeCommand(`!enable-user ${username}`);
+            // Send the command to the appropriate Teams channel
+            const commandMessage = `!enable-user ${username}`;
+            await this.teamsService.sendCommandToChannel(commandMessage, userInfo.department || 'IT');
             
             return {
                 success: true,
-                message: `Successfully enabled user '${username}' (${userInfo.displayName}).`
+                message: `Command '${commandMessage}' sent to Insight Connect channel. User '${username}' (${userInfo.displayName}) will be enabled.`
             };
         } catch (error) {
             logger.error(`Error enabling user ${username}:`, error);
             return {
                 success: false,
-                message: `Failed to enable user '${username}': ${error.message}`
+                message: `Failed to process enable command for user '${username}': ${error.message}`
             };
         }
     }
@@ -125,18 +127,19 @@ class CommandProcessor {
                 };
             }
 
-            // Execute the disable command through Rapid7
-            const result = await this.rapid7Service.executeCommand(`!disable-user ${username}`);
+            // Send the command to the appropriate Teams channel
+            const commandMessage = `!disable-user ${username}`;
+            await this.teamsService.sendCommandToChannel(commandMessage, userInfo.department || 'IT');
             
             return {
                 success: true,
-                message: `Successfully disabled user '${username}' (${userInfo.displayName}).`
+                message: `Command '${commandMessage}' sent to Insight Connect channel. User '${username}' (${userInfo.displayName}) will be disabled.`
             };
         } catch (error) {
             logger.error(`Error disabling user ${username}:`, error);
             return {
                 success: false,
-                message: `Failed to disable user '${username}': ${error.message}`
+                message: `Failed to process disable command for user '${username}': ${error.message}`
             };
         }
     }
@@ -152,18 +155,19 @@ class CommandProcessor {
                 };
             }
 
-            // Execute the reset password command through Rapid7
-            const result = await this.rapid7Service.executeCommand(`!reset-password ${username}`);
+            // Send the command to the appropriate Teams channel
+            const commandMessage = `!reset-password ${username}`;
+            await this.teamsService.sendCommandToChannel(commandMessage, userInfo.department || 'IT');
             
             return {
                 success: true,
-                message: `Successfully reset password for user '${username}' (${userInfo.displayName}). User will be required to change password at next login.`
+                message: `Command '${commandMessage}' sent to Insight Connect channel. Password for user '${username}' (${userInfo.displayName}) will be reset for next login.`
             };
         } catch (error) {
             logger.error(`Error resetting password for user ${username}:`, error);
             return {
                 success: false,
-                message: `Failed to reset password for user '${username}': ${error.message}`
+                message: `Failed to process password reset command for user '${username}': ${error.message}`
             };
         }
     }
@@ -179,54 +183,57 @@ class CommandProcessor {
                 };
             }
 
-            // Execute the revoke sessions command through Rapid7
-            const result = await this.rapid7Service.executeCommand(`!revoke-sessions ${email}`);
+            // Send the command to the appropriate Teams channel
+            const commandMessage = `!revoke-sessions ${email}`;
+            await this.teamsService.sendCommandToChannel(commandMessage, userInfo.department || 'IT');
             
             return {
                 success: true,
-                message: `Successfully revoked all sessions for user '${userInfo.userPrincipalName}' (${userInfo.displayName}).`
+                message: `Command '${commandMessage}' sent to Insight Connect channel. All sessions for user '${userInfo.userPrincipalName}' (${userInfo.displayName}) will be revoked.`
             };
         } catch (error) {
             logger.error(`Error revoking sessions for email ${email}:`, error);
             return {
                 success: false,
-                message: `Failed to revoke sessions for email '${email}': ${error.message}`
+                message: `Failed to process revoke sessions command for email '${email}': ${error.message}`
             };
         }
     }
 
     async enableAgent(target, userId, userName, chatId) {
         try {
-            // Execute the enable agent command through Rapid7
-            const result = await this.rapid7Service.executeCommand(`!enable-agent ${target}`);
+            // Send the command to the IT channel for endpoint management
+            const commandMessage = `!enable-agent ${target}`;
+            await this.teamsService.sendCommandToChannel(commandMessage, 'IT');
             
             return {
                 success: true,
-                message: `Successfully enabled Sentinel One agent for '${target}' for 3 hours.`
+                message: `Command '${commandMessage}' sent to Insight Connect channel. Sentinel One agent for '${target}' will be enabled for 3 hours.`
             };
         } catch (error) {
             logger.error(`Error enabling agent for ${target}:`, error);
             return {
                 success: false,
-                message: `Failed to enable agent for '${target}': ${error.message}`
+                message: `Failed to process enable agent command for '${target}': ${error.message}`
             };
         }
     }
 
     async disableAgent(target, userId, userName, chatId) {
         try {
-            // Execute the disable agent command through Rapid7
-            const result = await this.rapid7Service.executeCommand(`!disable-agent ${target}`);
+            // Send the command to the IT channel for endpoint management
+            const commandMessage = `!disable-agent ${target}`;
+            await this.teamsService.sendCommandToChannel(commandMessage, 'IT');
             
             return {
                 success: true,
-                message: `Successfully disabled Sentinel One agent for '${target}' for 3 hours.`
+                message: `Command '${commandMessage}' sent to Insight Connect channel. Sentinel One agent for '${target}' will be disabled for 3 hours.`
             };
         } catch (error) {
             logger.error(`Error disabling agent for ${target}:`, error);
             return {
                 success: false,
-                message: `Failed to disable agent for '${target}': ${error.message}`
+                message: `Failed to process disable agent command for '${target}': ${error.message}`
             };
         }
     }

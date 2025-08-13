@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
+const path = require('path');
 const { BotFrameworkAdapter, MemoryStorage, ConversationState, UserState } = require('botbuilder');
 const { ADCommandsBot } = require('./bot');
 const { logger } = require('./utils/logger');
 const { initializeDatabase } = require('./database/init');
+const { AuditLogger } = require('./services/auditLogger');
 
 // Load environment variables
 dotenv.config();
@@ -15,10 +17,22 @@ const app = express();
 const port = process.env.PORT || 3978;
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https:"],
+        },
+    },
+}));
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files for web GUI
+app.use('/static', express.static(path.join(__dirname, '../public')));
 
 // Create bot adapter
 const adapter = new BotFrameworkAdapter({
@@ -59,6 +73,55 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
+// Web GUI Routes
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// API endpoints for web GUI
+app.get('/api/audit-logs', async (req, res) => {
+    try {
+        const auditLogger = new AuditLogger();
+        const { startDate, endDate, userId, limit = 100 } = req.query;
+        
+        let logs;
+        if (startDate && endDate) {
+            logs = await auditLogger.getAuditReport(startDate, endDate, userId);
+        } else {
+            logs = await auditLogger.getCommandHistory(userId, limit);
+        }
+        
+        res.json({ success: true, data: logs });
+    } catch (error) {
+        logger.error('Error fetching audit logs:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+app.get('/api/stats', async (req, res) => {
+    try {
+        const auditLogger = new AuditLogger();
+        // Get basic statistics
+        const stats = {
+            totalCommands: 0,
+            successfulCommands: 0,
+            failedCommands: 0,
+            uniqueUsers: 0,
+            lastCommand: null
+        };
+        
+        res.json({ success: true, data: stats });
+    } catch (error) {
+        logger.error('Error fetching stats:', error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+});
+
+// Serve the main web GUI
+app.get('/gui', (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/gui.html'));
+});
+
 // Initialize database and start server
 async function startServer() {
     try {
@@ -68,6 +131,8 @@ async function startServer() {
         app.listen(port, () => {
             logger.info(`AD Commands Teams Bot is running on port ${port}`);
             logger.info(`Health check available at http://localhost:${port}/health`);
+            logger.info(`Web GUI available at http://localhost:${port}/gui`);
+            logger.info(`Main page available at http://localhost:${port}/`);
         });
     } catch (error) {
         logger.error('Failed to start server:', error);
